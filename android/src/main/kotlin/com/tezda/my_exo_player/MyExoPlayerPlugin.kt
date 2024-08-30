@@ -60,15 +60,16 @@ class ExoPlayerFactory(
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
  
     override fun create(context: Context?, id: Int, args: Any?): PlatformView {
-        val url = args as? String
-        return ExoPlayerView(context!!, url, binaryMessenger) { aspectRatio ->
+        val map = args as? Map<*, *>
+        val url = map?.get("url") as? String
+        val index = map?.get("index") as? Int ?: 0
+        return ExoPlayerView(context!!, url, binaryMessenger, { aspectRatio ->
             MethodChannel(binaryMessenger, "my_exo_player_aspect_ratio_$id")
                 .invokeMethod("onAspectRatioChanged", aspectRatio)
                 .also { 
                     Log.d("MyExoPlayerPlugin", "Aspect ratio method call sent: $aspectRatio") 
-                    Log.d("MyExoPlayerPlugin", "Kotlin hash code: ${url}")
-                 }
-        }
+                }
+        }, index)
     }
 }
  
@@ -76,7 +77,8 @@ class ExoPlayerView(
     context: Context,
     url: String?,
     private val binaryMessenger: BinaryMessenger,
-    private val onVideoAspectRatioChanged: (Float) -> Unit
+    private val onVideoAspectRatioChanged: (Float) -> Unit,
+    private val index: Int
 ) : PlatformView {
  
     private val playerView: PlayerView = PlayerView(context)
@@ -112,15 +114,21 @@ class ExoPlayerView(
         }
         methodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "play" -> {
-                    Log.d("MyExoPlayerPlugin", "Play called in method")
-                    player?.playWhenReady = true
+               "play" -> {
+                    val playIndex = call.argument<Int>("index")
+                    if (playIndex == index) {
+                        player?.playWhenReady = true
+                    }
                     result.success(null)
                 }
                 "pause" -> {
-                    player?.playWhenReady = false
+                    val pauseIndex = call.argument<Int>("index")
+                    if (pauseIndex == index) {
+                        player?.playWhenReady = false
+                    }
                     result.success(null)
                 }
+                
                 "dispose" -> {
                      // Handle dispose logic here
                     Log.d("MyExoPlayerPlugin", "Dispose method called")
