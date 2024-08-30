@@ -117,6 +117,7 @@ class ExoPlayerView(
                "play" -> {
                     val playIndex = call.argument<Int>("index")
                     if (playIndex == index) {
+                        player?.seekTo(0)
                         player?.playWhenReady = true
                     }
                     result.success(null)
