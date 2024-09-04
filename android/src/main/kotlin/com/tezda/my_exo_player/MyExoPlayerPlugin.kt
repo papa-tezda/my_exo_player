@@ -116,6 +116,8 @@ class ExoPlayerView(
             when (call.method) {
                "play" -> {
                     val playIndex = call.argument<Int>("index")
+                    Log.d("MyExoPlayerPlugin","Index : $index")
+                Log.d("MyExoPlayerPlugin","Play Index : $playIndex")
                     if (playIndex == index) {
                         player?.seekTo(0)
                         player?.playWhenReady = true
