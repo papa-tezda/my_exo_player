@@ -94,7 +94,7 @@ class ExoPlayerView(
                 setMediaItem(mediaItem)
                 prepare()
             }
- 
+ playWhenReady = false
             addListener(object : Player.Listener {
                 override fun onVideoSizeChanged(videoSize: VideoSize) {
                     super.onVideoSizeChanged(videoSize)
