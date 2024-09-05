@@ -81,7 +81,13 @@ class ExoPlayerView(
     private val index: Int
 ) : PlatformView {
  
-    private val playerView: PlayerView = PlayerView(context)
+      private val playerView: PlayerView = PlayerView(context).apply {
+        // Set initial layout parameters to fill the screen
+        layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+    }
     private var player: ExoPlayer? = ExoPlayer.Builder(context).build()
     private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, "my_exo_player")
     init {
@@ -101,9 +107,8 @@ class ExoPlayerView(
                     val aspectRatio = videoSize.width.toFloat() / videoSize.height.toFloat()
                     Log.d("MyExoPlayerPlugin", "Video size changed: ${videoSize.width}x${videoSize.height}, Aspect Ratio: $aspectRatio")
                     onVideoAspectRatioChanged(aspectRatio)
-                          if(videoSize.width < videoSize.height){
-            playerView.playerLayer.videoGravity = player.resize
-        }
+                    adjustLayoutParamsBasedOnAspectRatio(videoSize.width, videoSize.height)
+                         
 }
  
                 override fun onPlaybackStateChanged(state: Int) {
@@ -164,7 +169,24 @@ if (playIndex != null) {
             }
         }
     }
- 
+    private fun adjustLayoutParamsBasedOnAspectRatio(width: Int, height: Int) {
+        // Calculate the aspect ratio
+        val aspectRatio = width.toFloat() / height.toFloat()
+
+        // Adjust layout parameters based on aspect ratio
+        val layoutParams = playerView.layoutParams as FrameLayout.LayoutParams
+        if (aspectRatio < 1) { // Width is smaller than height
+            // Make the playerView occupy the whole screen
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
+        } else {
+            // Set the dimensions based on the aspect ratio
+            // Here, you can decide to use other sizes or a default size
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+            layoutParams.height = (layoutParams.width / aspectRatio).toInt()
+        }
+        playerView.layoutParams = layoutParams
+    }
     override fun getView(): View {
         return playerView
     }
