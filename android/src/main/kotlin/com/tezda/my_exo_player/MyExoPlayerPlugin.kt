@@ -116,13 +116,19 @@ class ExoPlayerView(
             when (call.method) {
                "play" -> {
                     val playIndex = call.argument<Int>("index")
-                    Log.d("MyExoPlayerPlugin","Index : $index")
-                Log.d("MyExoPlayerPlugin","Play Index : $playIndex")
-                    if (playIndex == index) {
-                        player?.seekTo(0)
-                        player?.playWhenReady = true
-                    }
-                    result.success(null)
+if (playIndex != null) {
+    Log.d("MyExoPlayerPlugin", "Received playIndex: $playIndex")
+    Log.d("MyExoPlayerPlugin", "Current index: $index")
+    
+    if (playIndex == index) {
+        player?.seekTo(0)
+        player?.playWhenReady = true
+    } else {
+        Log.d("MyExoPlayerPlugin", "playIndex does not match index")
+    }
+} else {
+    Log.d("MyExoPlayerPlugin", "playIndex is null")
+}
                 }
                 "pause" -> {
                     val pauseIndex = call.argument<Int>("index")
