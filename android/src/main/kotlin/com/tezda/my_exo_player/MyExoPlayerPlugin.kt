@@ -101,6 +101,9 @@ class ExoPlayerView(
                     val aspectRatio = videoSize.width.toFloat() / videoSize.height.toFloat()
                     Log.d("MyExoPlayerPlugin", "Video size changed: ${videoSize.width}x${videoSize.height}, Aspect Ratio: $aspectRatio")
                     onVideoAspectRatioChanged(aspectRatio)
+                          if(videoSize.width < videoSize.height){
+            playerView.playerLayer.videoGravity = player.resize
+        }
 }
  
                 override fun onPlaybackStateChanged(state: Int) {
