@@ -124,6 +124,7 @@ if (playIndex != null) {
         player?.seekTo(0)
         player?.playWhenReady = true
     } else {
+        player?.playWhenReady = false
         Log.d("MyExoPlayerPlugin", "playIndex does not match index")
     }
 } else {
